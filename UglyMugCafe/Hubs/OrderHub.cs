@@ -5,14 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using UglyMugCafe.Models;
 
-namespace UglyMugCafe
+namespace UglyMugCafe.Hubs
 {
     public class OrderHub : Hub
     {
-        public void SendToAll(Order order)
+        public async Task NewOrder(OrderContent order)
         {
-            Clients.All.SendAsync("sendToAll", order);
+            await Clients.All.SendAsync("OrderReceived", order);
         }
-    
+
     }
 }

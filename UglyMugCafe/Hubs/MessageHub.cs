@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UglyMugCafe.Models;
 
-namespace UglyMugCafe
+namespace UglyMugCafe.Hubs
 {
     public class MessageHub : Hub
     {

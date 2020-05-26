@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
+using UglyMugCafe.Hubs;
 using UglyMugCafe.Models;
 
 namespace UglyMugCafe
@@ -46,9 +47,18 @@ namespace UglyMugCafe
             services.AddDbContext<ProductContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DevConnection")));
 
-            services.AddCors();
+            //services.AddCors();
+
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins("http://localhost:4200");
+            }));
 
             services.AddSignalR();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,15 +78,12 @@ namespace UglyMugCafe
 
             app.UseSignalR(options =>
             {
-                //routes.MapHub<OrderHub>("updatequeue");
+                options.MapHub<OrderHub>("/OrderHub");
                 options.MapHub<MessageHub>("/MessageHub");
             });
 
             app.UseSpa(spa =>
             {
-                // To learn more about options for serving an Angular SPA from ASP.NET Core,  
-                // see https://go.microsoft.com/fwlink/?linkid=864501  
-
                 spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
@@ -85,6 +92,10 @@ namespace UglyMugCafe
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+
+            /*var hubConfiguration = new HubConfiguration();
+            hubConfiguration.EnableDetailedErrors = true;
+            app.MapSignalR(hubConfiguration);*/
         }
     }
 }
